@@ -18,17 +18,36 @@ $migrations = [
         `amount` DECIMAL(15) NOT NULL,
         `status` VARCHAR(15) NOT NULL,
         PRIMARY KEY (`id`)
-    );'
+    );',
+
+    // alter `disbursement`, add columns : receipt, time_served
+    'ALTER TABLE `disbursements`
+        ADD COLUMN `receipt` VARCHAR(100),
+        ADD COLUMN `time_served` DATETIME
+    ;',
 ];
 
-/**
- * TODO
- * 
- * - Check migrations table existance
- * - Get latest version of migrations and slice migrations array to the latest / new migrations
- */
+function migrate(array $migrations, $startFromVersion)
+{
+    global $db;
 
-foreach ($migrations as $version => $migration) {
-    $db->raw($migration);
-    $db->raw('INSERT INTO `migrations` values (?)', [ $version ]);
+    foreach ($migrations as $version => $migration) {
+        echo 'Run query ' . $migration . PHP_EOL;
+        $db->raw($migration);
+        $db->raw('INSERT INTO `migrations` values (?)', [ $version + $startFromVersion ]);
+    }
 }
+
+echo 'Run migrations' . PHP_EOL;
+echo '...' . PHP_EOL;
+if ($db->raw('SHOW TABLES LIKE ?', ['migrations'])->fetchColumn()) {
+    $checkVersion = $db->raw('SELECT `version` from `migrations` ORDER BY `version` DESC LIMIT 1');
+    $latestVersion = $checkVersion->fetchColumn() ?: 0;
+    $startFromVersion = $latestVersion + 1;
+    $migrations = array_slice($migrations, $startFromVersion);
+} else {
+    $startFromVersion = 0;
+}
+
+migrate($migrations, $startFromVersion);
+echo 'Migration complete' . PHP_EOL;

@@ -40,6 +40,7 @@ class Database
     {
         $prepared = $this->connection->prepare($sql);
         $prepared->execute($valueMappings);
+        return $prepared;
     }
 
     public function rawWithTransaction(string $sql, array $valueMappings)
