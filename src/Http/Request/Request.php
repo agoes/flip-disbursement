@@ -68,7 +68,6 @@ class Request
     private function executeAndClose()
     {
         $response = curl_exec($this->httpClient);
-        curl_close($this->httpClient);
         return $this->responseStrategy->parse($response);
     }
 

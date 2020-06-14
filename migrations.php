@@ -26,10 +26,23 @@ $migrations = [
         ADD COLUMN `time_served` DATETIME
     ;',
 
-    // alter `disbursement`, add columns : receipt, time_served
+    // alter `disbursement`, add columns : vendor_disbursement_id
     'ALTER TABLE `disbursements`
         ADD COLUMN `vendor_disbursement_id` INT(11),
+        MODIFY COLUMN `bank_code` VARCHAR(25) NOT NULL;
         ADD UNIQUE KEY `vendor_disbursement_id` (`vendor_disbursement_id`)
+    ;',
+
+    // modify column bank_code and add timestamps
+    'ALTER TABLE `disbursements`
+        MODIFY COLUMN `bank_code` VARCHAR(25) NOT NULL,
+        ADD COLUMN `created_at` DATETIME NOT NULL DEFAULT NOW(),
+        ADD COLUMN `modified_at` DATETIME NOT NULL DEFAULT NOW()
+    ;',
+
+    // modify column vendor_disbursement_id
+    'ALTER TABLE `disbursements`
+        MODIFY COLUMN `vendor_disbursement_id` VARCHAR(100) NULL
     ;',
 ];
 
