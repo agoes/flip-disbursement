@@ -55,17 +55,18 @@ class Request
     public function get(string $path)
     {
         $this->initRequest($path);
-        return $this->executeAndClose();
+        curl_setopt($this->httpClient, CURLOPT_HTTPGET, true);
+        return $this->execute();
     }
 
     public function post(string $path, $requestBody = [])
     {
         $this->initRequest($path);
         curl_setopt($this->httpClient, CURLOPT_POSTFIELDS, $requestBody);
-        return $this->executeAndClose();
+        return $this->execute();
     }
 
-    private function executeAndClose()
+    private function execute()
     {
         $response = curl_exec($this->httpClient);
         return $this->responseStrategy->parse($response);
@@ -78,6 +79,6 @@ class Request
 
     private function buildUrl(string $path) : string
     {
-        return str_replace('//', '/', $this->baseUrl . $path);
+        return $this->baseUrl . $path;
     }
 }

@@ -48,7 +48,7 @@ class Disbursement
             `time_served` = ?
         WHERE
             `id` = ?
-        ;', [$vendorDisbursementId, $status, $receipt, $timeServed, $id]);
+        ;', [$vendorDisbursementId, $status, $receipt, $timeServed, (int) $id]);
     }
 
     public function disburseAll() : void
@@ -85,19 +85,18 @@ class Disbursement
                 $response = $this->checkDisbursementStatus($disbursement['vendor_disbursement_id']);
 
                 if (!$this->isDisbursementFailed($disbursement)) {
-                    $this->statusUpdate($disbursement['id'], $response->status);
+                    $this->updateDisbursement(
+                        $disbursement['id'],
+                        $response->id,
+                        $response->status,
+                        $response->receipt,
+                        $response->time_served
+                    );
+                } else {
+                    $this->statusUpdate($id, Statuses::PENDING_RETRY);
                 }
             }
         }
-    }
-
-    public function markForRetry($id) : void
-    {
-    }
-
-    public function markAsSuccess($id) : void
-    {
-        $this->statusUpdate($id, Statuses::SUCCESS);
     }
 
     private function isDisbursementFailed($disbursement) : bool
@@ -115,7 +114,7 @@ class Disbursement
         $this->db->raw('UPDATE `disbursements` SET
             `status` = ?
         WHERE
-            `id` = ' . $id . '
-        ;', [$status]);
+            `id` = ?
+        ;', [$status, (int) $id]);
     }
 }
