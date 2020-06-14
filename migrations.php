@@ -25,6 +25,12 @@ $migrations = [
         ADD COLUMN `receipt` VARCHAR(100),
         ADD COLUMN `time_served` DATETIME
     ;',
+
+    // alter `disbursement`, add columns : receipt, time_served
+    'ALTER TABLE `disbursements`
+        ADD COLUMN `vendor_disbursement_id` INT(11),
+        ADD UNIQUE KEY `vendor_disbursement_id` (`vendor_disbursement_id`)
+    ;',
 ];
 
 function migrate(array $migrations, $startFromVersion)
