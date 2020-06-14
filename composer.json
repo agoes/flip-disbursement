@@ -1,0 +1,18 @@
+{
+    "name": "agoes/flip-disbursement",
+    "authors": [
+        {
+            "name": "agoes",
+            "email": "agoes.aswari@gmail.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "files": [
+            "src/Helpers/Helper.php"
+        ],
+        "psr-4": {
+            "Flip\\": "src/"
+        }
+    }
+}
