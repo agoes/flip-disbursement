@@ -1,5 +1,6 @@
 <?php
-require 'vendor/autoload.php';
+require 'autoload.php';
+require 'src/Helpers/Helper.php';
 
 $config = [
     'database'  => require(__DIR__ . '/config/database.php'),
