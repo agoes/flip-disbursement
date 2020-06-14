@@ -1,11 +1,14 @@
 <?php
 namespace Flip\Http\Request;
 
+use Flip\Http\Response\ResponseStrategyInterface;
+
 class Request
 {
     private static $instance = null;
     private $baseUrl;
     private $httpClient;
+    private $responseStrategy;
 
     private function __construct() {
         $this->httpClient = curl_init();
@@ -30,9 +33,16 @@ class Request
         return $this;
     }
 
-    public function setAuthentication(AuthenticationStrategyInterface $authentication)
+    public function setAuthentication(AuthenticationStrategyInterface $authentication) : self
     {
         $authentication->setAuthentication($this->httpClient);
+        return $this;
+    }
+
+    public function setResponseStrategy(ResponseStrategyInterface $responseStrategy) : self
+    {
+        $this->responseStrategy = $responseStrategy;
+        return $this;
     }
 
     private function getDefaultOptions() : array
@@ -42,24 +52,24 @@ class Request
         ];
     }
 
-    public function get(string $path) : string
+    public function get(string $path)
     {
         $this->initRequest($path);
         return $this->executeAndClose();
     }
 
-    public function post(string $path, $requestBody = []) : string
+    public function post(string $path, $requestBody = [])
     {
         $this->initRequest($path);
         curl_setopt($this->httpClient, CURLOPT_POSTFIELDS, $requestBody);
         return $this->executeAndClose();
     }
 
-    private function executeAndClose() : string
+    private function executeAndClose()
     {
         $response = curl_exec($this->httpClient);
         curl_close($this->httpClient);
-        return $response;
+        return $this->responseStrategy->parse($response);
     }
 
     private function initRequest(string $path) : void

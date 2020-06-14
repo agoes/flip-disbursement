@@ -25,4 +25,4 @@ $httpClient
             $flipConfig['authentication']['basic']['username'],
             $flipConfig['authentication']['basic']['password']
         )
-    );
+    )->setResponseStrategy(new Flip\Http\Response\Strategies\JsonResponseStrategy);
